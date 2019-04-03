@@ -1,5 +1,5 @@
 ## Project Title
-Currency check 
+Checking currency
 
 ## Motivation
 It is part of Interview projects which should use React context API
