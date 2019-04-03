@@ -13,30 +13,33 @@ class MyStore extends Component {
   componentDidMount() {
     this.getCurrency();
   }
-  getCurrency() {
-    fetch(`https://api.exchangeratesapi.io/latest?base=${this.state.base}`)
-      .then(data => data.json())
-      .then(data => {
-        let list = [];
-        for (let key in data.rates) {
-          let each = {};
-          each["currency"] = key;
-          each["rate"] = data.rates[key];
-          list.push(each);
-        }
-        this.setState({
-          list,
-          date: data.date
-        });
-      })
-      .catch(err => console.log(`error from getting data Error is ${err}`));
+  async getCurrency() {
+    let list = [];
+    const response = await fetch(
+      `https://api.exchangeratesapi.io/latest?base=${this.state.base}`
+    );
+    const data = await response.json();
+    for (let key in data.rates) {
+      let each = {};
+      each["currency"] = key;
+      each["rate"] = data.rates[key];
+      list.push(each);
+    }
+    this.setState({
+      list,
+      date: data.date
+    });
   }
 
   render() {
     return (
       <Store.Provider
         value={{
-          state: this.state
+          state: this.state,
+          changeBase: base => {
+            this.setState({ base });
+            this.getCurrency();
+          }
         }}
       >
         {this.props.children}

@@ -6,7 +6,14 @@ import { Store } from "../context";
 import Input from "../components/Input";
 import MyButton from "../components/Button";
 import List from "../components/List";
+import Pickers from "../components/Picker";
 
+const LoadingView = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  background-color: lightblue;
+`;
 const Container = styled.View`
   flex: 5;
   background-color: papayawhip;
@@ -34,7 +41,7 @@ class Main extends Component {
     amount: 500,
     error: "",
     show: false,
-    animation: new Animated.Value(0)
+    base: "USD"
   };
 
   update = show => {
@@ -78,7 +85,6 @@ class Main extends Component {
         return (
           <Store.Consumer>
             {context => {
-              console.log("context ", context);
               return (
                 <React.Fragment>
                   <Container>
@@ -125,17 +131,43 @@ class Main extends Component {
         );
       } else {
         return (
-          <Container>
-            <TextContainer>
-              <MainText>Currency Calculator</MainText>
-              <MainText>Base Currency USD</MainText>
-            </TextContainer>
-            <Input
-              keyboardType="numeric"
-              onChangeText={amount => this.changeAmount(amount)}
-            />
-            <MyButton title="Get Rate" onPress={() => this.update(true)} />
-          </Container>
+          <Store.Consumer>
+            {context => {
+              let newList = context.state.list.map((item, index) => {
+                let newObj = {};
+                newObj["label"] = item["currency"];
+                newObj["value"] = item["currency"];
+                newObj["key"] = index;
+                return newObj;
+              });
+              if (context.state.list.length > 0) {
+                return (
+                  <Container>
+                    <Pickers
+                      value={this.state.base}
+                      items={newList}
+                      onValueChange={value => {
+                        this.setState({ base: value });
+                      }}
+                      onDonePress={() => context.changeBase(this.state.base)}
+                    />
+                    <Input
+                      keyboardType="numeric"
+                      onChangeText={amount => this.changeAmount(amount)}
+                    />
+                    <MyButton
+                      title="Get Rate"
+                      onPress={() => this.update(true)}
+                    />
+                  </Container>
+                );
+              } else {
+                <LoadingView>
+                  <Text>Loading...</Text>
+                </LoadingView>;
+              }
+            }}
+          </Store.Consumer>
         );
       }
     }
