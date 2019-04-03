@@ -5,7 +5,7 @@ Currency check
 It is part of Interview projects which should use React context API
 
 ## Images
- <img src="./image/1.png" width="200" height="400" />
+ <img src="image/1.png" width="200" height="400" />
  
 ## Tech and Framework
 Built with
